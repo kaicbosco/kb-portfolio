@@ -14,6 +14,15 @@ dist-ssr
 coverage
 *.local
 
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local review artifacts
+/receipts/
+/review-receipts/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -26,17 +35,13 @@ coverage
 
 *.tsbuildinfo
 
-.eslintcache
-
-# Cypress
-/cypress/videos/
-/cypress/screenshots/
-
 # Vitest
 __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
 
+# Playwright
 test-results/
 playwright-report/
+.playwright-browsers/

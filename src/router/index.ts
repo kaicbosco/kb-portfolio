@@ -1,8 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, type RouterHistory } from 'vue-router'
+import { routes } from './routes'
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [],
-})
-
-export default router
+export function createPortfolioRouter(history: RouterHistory) {
+  return createRouter({
+    history,
+    routes,
+    scrollBehavior: (_to, _from, savedPosition) => savedPosition ?? { top: 0 },
+  })
+}

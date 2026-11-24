@@ -1,0 +1,39 @@
+@import 'tailwindcss' source('../../');
+@import './fonts.css';
+@import './tokens.css';
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground;
+    min-block-size: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+
+  h1 {
+    @apply text-3xl font-bold lg:text-4xl;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-focus;
+  }
+
+  ::selection {
+    @apply bg-primary-hover text-on-primary;
+  }
+}
+
+@utility site-grid {
+  @apply grid grid-cols-4 gap-4 lg:grid-cols-12 lg:gap-6;
+}

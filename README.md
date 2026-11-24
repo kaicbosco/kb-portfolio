@@ -1,73 +1,45 @@
-# kb-portfolio
+# KB. Portfolio
 
-This template should help get you started developing with Vue 3 in Vite.
+Portfólio profissional de Kaíque Bosco, desenvolvedor front-end e estudante de Engenharia de Software. A versão atual entrega a fundação técnica bilíngue; a interface e os estudos de caso definitivos ainda não foram implementados.
 
-## Recommended IDE Setup
+## Desenvolvimento local
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+Use a versão do Node.js indicada em [`.nvmrc`](.nvmrc) (22.23.1) e o pnpm 10.33.1, fixado em [`package.json`](package.json).
 
 ```sh
-pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+O Vite informa a URL local. Abra `/pt` ou `/en` para escolher o idioma. No VS Code, abra [`kb-portfolio.code-workspace`](kb-portfolio.code-workspace) e use as [extensões recomendadas](.vscode/extensions.json).
+
+| Comando              | Finalidade                                  |
+| -------------------- | ------------------------------------------- |
+| `pnpm dev`           | Servidor de desenvolvimento                 |
+| `pnpm build`         | Checagem de tipos e build em `dist/`        |
+| `pnpm preview`       | Servir localmente o build já gerado         |
+| `pnpm lint`          | Lint sem correções; falha em avisos         |
+| `pnpm lint:fix`      | Aplicar correções do Oxlint                 |
+| `pnpm format`        | Formatar arquivos com Prettier              |
+| `pnpm format:check`  | Conferir formatação sem reescrever arquivos |
+| `pnpm type-check`    | Checar tipos da aplicação, configs e testes |
+| `pnpm test:unit`     | Executar Vitest em modo de observação local |
+| `pnpm test:unit:run` | Executar Vitest uma vez                     |
+| `pnpm test:e2e`      | Executar Playwright com Chromium            |
+| `pnpm check`         | Lint, formatação, testes unitários e build  |
+
+Para E2E, instale somente o Chromium headless gerenciado pelo Playwright:
 
 ```sh
-pnpm build
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" pnpm exec playwright install --only-shell chromium
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" pnpm test:e2e
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+Consulte [Testes](docs/TESTING.md) para usar um Chromium já instalado ou reproduzir a verificação contra o build.
 
-```sh
-pnpm test:unit
-```
+## Documentação
 
-### Run End-to-End Tests with [Playwright](https://playwright.dev)
-
-```sh
-# Install browsers for the first run
-npx playwright install
-
-# When testing on CI, must build the project first
-pnpm build
-
-# Runs the end-to-end tests
-pnpm test:e2e
-# Runs the tests only on Chromium
-pnpm test:e2e --project=chromium
-# Runs the tests of a specific file
-pnpm test:e2e tests/example.spec.ts
-# Runs the tests in debug mode
-pnpm test:e2e --debug
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
+- [Projeto](docs/PROJECT.md), [arquitetura](docs/ARCHITECTURE.md) e [ADR de internacionalização](docs/adr/0001-rotas-localizadas.md)
+- [Design system](docs/DESIGN_SYSTEM.md) e [UX/UI](docs/UX_UI.md)
+- [Conteúdo](docs/CONTENT.md) e [roadmap](docs/ROADMAP.md)
+- [Testes e CI](docs/TESTING.md), [regras para agentes](AGENTS.md) e [changelog](CHANGELOG.md)

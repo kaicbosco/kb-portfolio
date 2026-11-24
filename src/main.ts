@@ -1,9 +1,12 @@
 import { createApp } from 'vue'
+import { createWebHistory } from 'vue-router'
 import App from './App.vue'
-import router from './router'
+import { createPortfolioI18n } from './i18n'
+import { createPortfolioRouter } from './router'
+import './assets/styles/main.css'
 
-const app = createApp(App)
+const router = createPortfolioRouter(createWebHistory(import.meta.env.BASE_URL))
+const app = createApp(App).use(createPortfolioI18n()).use(router)
 
-app.use(router)
-
+await router.isReady()
 app.mount('#app')
