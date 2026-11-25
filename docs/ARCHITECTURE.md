@@ -9,7 +9,10 @@
 | `src/router/`             | Declarar rotas, metadados e destinos equivalentes por idioma.              |
 | `src/i18n/`               | Definir idiomas, fallback e catálogos de interface com a mesma estrutura.  |
 | `src/layouts/`            | Prover landmarks, acesso rápido ao conteúdo e foco em mudanças de rota.    |
-| `src/components/layout/`  | Renderizar a navegação de idiomas com links reais.                         |
+| `src/components/layout/`  | Prover container, Bento Grid e navegação de idiomas com links reais.       |
+| `src/components/ui/`      | Prover primitivas de ação, superfície e metadados.                         |
+| `src/components/shared/`  | Padronizar a apresentação semântica de títulos e status.                   |
+| `src/dev/`                | Compor o catálogo visual, carregado apenas pelo Vite dev.                  |
 | `src/pages/`              | Renderizar a inicial, o placeholder de projeto e o 404.                    |
 | `src/assets/styles/`      | Centralizar tokens, fontes, estilos globais e utilitários Tailwind.        |
 | `src/constants/`          | Centralizar identificadores estáveis da marca.                             |
@@ -28,6 +31,7 @@ Os catálogos de interface são pequenos e carregados junto com a aplicação. O
 | `/pt/projetos/:slug` | Placeholder de estudo de caso em português.             |
 | `/en/projects/:slug` | O mesmo placeholder em inglês.                          |
 | `/pt/*` e `/en/*`    | 404 no idioma do prefixo quando outra rota não casa.    |
+| `/dev/design-system` | Playground visual restrito ao Vite dev; 404 no build.   |
 | Demais URLs          | 404 em português, sem substituir o endereço solicitado. |
 
 Qualquer `slug` que case com a rota de projeto renderiza apenas o placeholder. A validação de slugs contra um catálogo e o tratamento de projetos inexistentes ficam para a etapa editorial. A troca de idioma preserva `slug`, query e fragmento quando há uma página equivalente. No 404, leva para a inicial do outro idioma. Leia o [ADR 0001](adr/0001-rotas-localizadas.md).

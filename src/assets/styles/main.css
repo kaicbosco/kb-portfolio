@@ -2,6 +2,9 @@
 @import './fonts.css';
 @import './tokens.css';
 
+/* O playground usa @apply no CSS da rota, sem acrescentar utilitários ao bundle público. */
+@source not '../../dev';
+
 @layer base {
   :root {
     color-scheme: dark;
@@ -26,7 +29,8 @@
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-focus;
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
   }
 
   ::selection {
@@ -35,5 +39,9 @@
 }
 
 @utility site-grid {
-  @apply grid grid-cols-4 gap-4 lg:grid-cols-12 lg:gap-6;
+  @apply grid grid-cols-4 gap-grid-gap md:grid-cols-8 lg:grid-cols-12 lg:gap-grid-gap-wide;
+}
+
+@utility site-gutters {
+  @apply px-gutter md:px-gutter-tablet lg:px-gutter-desktop;
 }

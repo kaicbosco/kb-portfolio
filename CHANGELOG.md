@@ -9,6 +9,8 @@
 - Testes de fundação com Vitest e Playwright, CI e documentação do projeto.
 - Docker opcional para Vite e Nginx, com sincronização de dependências, smoke tests HTTP e validação do hardening.
 - Análise da imagem de produção com Trivy e configuração de distribuição condicionada no GHCR, sem deploy.
+- APIs reutilizáveis de botão, card, badge, container, Bento Grid, heading e indicador de status.
+- Catálogo visual em `/dev/design-system`, exclusivo de Vite dev, e testes de componentes, reflow, teclado, contraste e exclusão do catálogo em produção.
 
 ### Alterado
 
@@ -17,6 +19,7 @@
 - Validação no Chromium reforçada para foco visível, preservação de fragmento e ícone decorativo do 404.
 - Git ignora arquivos locais de ambiente e registros de revisão.
 - Pipeline nativa reutilizável, executada uma vez por evento, e E2E com suporte a servidor externo.
+- Tokens Crimson Void para tipografia, espaçamento, foco e estados interativos, com grid de oito colunas no tablet e acento vermelho no ponto da marca.
 
 ### Removido
 

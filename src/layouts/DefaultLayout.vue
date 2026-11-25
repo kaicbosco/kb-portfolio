@@ -2,6 +2,7 @@
 import { computed, useTemplateRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute } from 'vue-router'
+import AppContainer from '@/components/layout/AppContainer.vue'
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue'
 import { siteMark, siteName } from '@/constants/site'
 import { defaultLocale } from '@/i18n/config'
@@ -29,25 +30,26 @@ watch(
   </a>
 
   <header class="border-b border-border">
-    <div
-      class="mx-auto flex max-w-site flex-wrap items-center justify-between gap-x-4 px-4 py-2 lg:px-8"
-    >
+    <AppContainer class="flex flex-wrap items-center justify-between gap-x-4 py-2">
       <RouterLink
         :to="{ name: home }"
         :aria-label="siteName"
         class="inline-flex min-h-11 items-center font-display text-xl font-bold"
       >
-        {{ siteMark }}
+        <span aria-hidden="true"
+          >{{ siteMark.slice(0, -1)
+          }}<span class="text-accent">{{ siteMark.slice(-1) }}</span></span
+        >
       </RouterLink>
       <LanguageSwitcher />
-    </div>
+    </AppContainer>
   </header>
 
   <main
     id="main-content"
     ref="main"
     tabindex="-1"
-    class="site-grid mx-auto max-w-site px-4 py-12 lg:px-8"
+    class="site-grid site-gutters mx-auto max-w-site py-12"
   >
     <slot />
   </main>

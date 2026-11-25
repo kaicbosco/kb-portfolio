@@ -6,6 +6,13 @@ const port = isCI ? 4173 : 4174
 
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL
 const baseURL = externalBaseURL ?? `http://127.0.0.1:${port}`
+const isProductionTarget = isCI || Boolean(externalBaseURL)
+const chromium = {
+  ...devices['Desktop Chrome'],
+  launchOptions: {
+    executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
+  },
+}
 
 export default defineConfig({
   testDir: './e2e',
@@ -21,13 +28,15 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        launchOptions: {
-          executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
-        },
-      },
+      testIgnore: [
+        '**/design-system.spec.ts',
+        ...(!isProductionTarget ? ['**/production.spec.ts'] : []),
+      ],
+      use: chromium,
     },
+    ...(!isProductionTarget
+      ? [{ name: 'design-system', testMatch: '**/design-system.spec.ts', use: chromium }]
+      : []),
   ],
 
   webServer: externalBaseURL
