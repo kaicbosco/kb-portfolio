@@ -1,0 +1,57 @@
+name: kb-portfolio
+
+services:
+  dev:
+    image: ${KB_IMAGE_REPOSITORY:-kb-portfolio}:dev
+
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+
+    ports:
+      - '127.0.0.1:${KB_DEV_PORT:-5173}:5173'
+
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+
+      - type: volume
+        source: node_modules
+        target: /app/node_modules
+
+      - type: volume
+        source: pnpm_store
+        target: /pnpm/store
+
+    init: true
+
+  production:
+    image: ${KB_IMAGE_REPOSITORY:-kb-portfolio}:production
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        OCI_REVISION: ${OCI_REVISION:-unknown}
+
+    ports:
+      - '127.0.0.1:${KB_PRODUCTION_PORT:-8080}:8080'
+
+    profiles:
+      - production
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m,mode=1777
+
+    cap_drop:
+      - ALL
+
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  node_modules:
+  pnpm_store:

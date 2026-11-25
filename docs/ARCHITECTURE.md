@@ -32,6 +32,12 @@ Os catálogos de interface são pequenos e carregados junto com a aplicação. O
 
 Qualquer `slug` que case com a rota de projeto renderiza apenas o placeholder. A validação de slugs contra um catálogo e o tratamento de projetos inexistentes ficam para a etapa editorial. A troca de idioma preserva `slug`, query e fragmento quando há uma página equivalente. No 404, leva para a inicial do outro idioma. Leia o [ADR 0001](adr/0001-rotas-localizadas.md).
 
+## Execução e distribuição
+
+O fluxo nativo permanece independente do Docker. O Compose oferece um Vite de desenvolvimento com bind mount e volumes de dependências, e um Nginx para testar o `dist/` de produção em uma imagem separada. Nenhum container adiciona backend. O Nginx usa porta 8080, raiz estática exclusiva e fallback de navegação da SPA. Arquivos ausentes em `/assets/` recebem HTTP 404 sem fallback.
+
+O workflow Docker invoca o quality gate nativo, valida o serviço de produção e entrega a própria imagem testada ao job condicional de publicação no GHCR. Isso distribui um artefato, não implanta o site. Consulte o [guia Docker](DOCKER.md) e o [ADR 0002](adr/0002-docker-opcional.md).
+
 ## SEO e hospedagem futura
 
 A SPA usa History API; o host precisa servir o HTML da aplicação para navegações diretas em rotas válidas. O 404 atual é uma página, não uma garantia de status HTTP 404. Antes de publicar, preparar pré-renderização das URLs canônicas e dos slugs aprovados, com `lang`, descrição, canonical e `hreflang` já no HTML. Definir sitemap, política de indexação de páginas provisórias, redirecionamento de `/` no host e 404 HTTP para endereços inválidos. Nenhum domínio, configuração da Vercel ou mecanismo de pré-renderização foi adotado nesta etapa.

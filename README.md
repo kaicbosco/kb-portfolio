@@ -37,9 +37,18 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" pnpm test:e2e
 
 Consulte [Testes](docs/TESTING.md) para usar um Chromium já instalado ou reproduzir a verificação contra o build.
 
+## Docker opcional
+
+```sh
+docker compose up --build dev
+docker compose up --build -d --wait production
+```
+
+O Vite fica em `http://127.0.0.1:5173` e o Nginx em `http://127.0.0.1:8080`. Execute o segundo comando em outro terminal para usar os dois juntos. Consulte o [guia Docker](docs/DOCKER.md) para requisitos, testes, segurança e distribuição pelo GHCR.
+
 ## Documentação
 
 - [Projeto](docs/PROJECT.md), [arquitetura](docs/ARCHITECTURE.md) e [ADR de internacionalização](docs/adr/0001-rotas-localizadas.md)
 - [Design system](docs/DESIGN_SYSTEM.md) e [UX/UI](docs/UX_UI.md)
 - [Conteúdo](docs/CONTENT.md) e [roadmap](docs/ROADMAP.md)
-- [Testes e CI](docs/TESTING.md), [regras para agentes](AGENTS.md) e [changelog](CHANGELOG.md)
+- [Testes e CI](docs/TESTING.md), [Docker](docs/DOCKER.md), [regras para agentes](AGENTS.md) e [changelog](CHANGELOG.md)

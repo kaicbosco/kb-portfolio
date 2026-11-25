@@ -1,0 +1,202 @@
+name: Docker
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  quality:
+    uses: ./.github/workflows/ci.yml
+
+  docker:
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OCI_REVISION: ${{ github.sha }}
+    outputs:
+      image-id: ${{ steps.image.outputs.id }}
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Validate Compose
+        run: docker compose --profile production config --quiet
+
+      - name: Build development image
+        run: docker compose build dev
+
+      - name: Build production image
+        run: docker compose build production
+
+      - name: Start production container
+        run: docker compose up -d --no-build --wait --wait-timeout 120 production
+
+      - name: Validate HTTP and container security
+        run: bash docker/check-production.sh
+
+      - name: Record running image identity
+        id: image
+        run: |
+          container=$(docker compose ps -q production)
+          id=$(docker inspect --format '{{.Image}}' "$container")
+          test "$id" = "$(docker image inspect --format '{{.Id}}' kb-portfolio:production)"
+          printf 'id=%s\n' "$id" >> "$GITHUB_OUTPUT"
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+
+      - name: E2E against Nginx
+        run: pnpm test:e2e
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:8080
+
+      - name: Scan tested production image
+        id: trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          version: v0.70.0
+          image-ref: ${{ steps.image.outputs.id }}
+          scanners: vuln
+          vuln-type: os,library
+          format: table
+          output: ${{ runner.temp }}/trivy-production.txt
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: '1'
+          timeout: 5m
+        env:
+          TRIVY_IMAGE_SRC: docker
+          TRIVY_IGNOREFILE: /dev/null
+
+      - name: Show Trivy report
+        if: ${{ !cancelled() && (steps.trivy.outcome == 'success' || steps.trivy.outcome == 'failure') }}
+        env:
+          REPORT: ${{ runner.temp }}/trivy-production.txt
+        run: |
+          if test -s "$REPORT"; then
+            cat "$REPORT"
+          else
+            echo "::error::Trivy did not generate a report. Check the scanner logs."
+            exit 1
+          fi
+
+      - name: Upload Trivy report
+        if: ${{ !cancelled() && (steps.trivy.outcome == 'success' || steps.trivy.outcome == 'failure') }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: trivy-production
+          path: ${{ runner.temp }}/trivy-production.txt
+          if-no-files-found: error
+          retention-days: 5
+
+      - name: Export validated image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'kaicbosco/kb-portfolio'
+        env:
+          VALIDATED_ID: ${{ steps.image.outputs.id }}
+        run: |
+          test "$VALIDATED_ID" = "$(docker image inspect --format '{{.Id}}' kb-portfolio:production)"
+          docker save kb-portfolio:production | gzip > production.tar.gz
+
+      - name: Upload validated image
+        id: upload
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'kaicbosco/kb-portfolio'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: production-image-${{ github.run_attempt }}
+          path: production.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Collect failure diagnostics
+        if: failure()
+        run: |
+          docker compose --profile production ps -a || true
+          docker compose --profile production logs --no-color || true
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: docker-playwright-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 5
+
+      - name: Stop containers
+        if: ${{ always() && hashFiles('compose.yaml') != '' }}
+        run: docker compose --profile production down
+
+  publish:
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'kaicbosco/kb-portfolio'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      IMAGE: ghcr.io/kaicbosco/kb-portfolio
+
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.docker.outputs.artifact-id }}
+          digest-mismatch: error
+
+      - name: Load and verify validated image
+        env:
+          VALIDATED_ID: ${{ needs.docker.outputs.image-id }}
+        run: |
+          gzip -dc production.tar.gz | docker load
+          test "$VALIDATED_ID" = "$(docker image inspect --format '{{.Id}}' kb-portfolio:production)"
+          revision=$(docker image inspect \
+            --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$VALIDATED_ID")
+          test "$revision" = "$GITHUB_SHA"
+
+      - name: Authenticate to GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Publish production image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker tag kb-portfolio:production "$IMAGE:sha-$GITHUB_SHA"
+          docker push "$IMAGE:sha-$GITHUB_SHA"
+
+          head_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          if [[ $head_sha != "$GITHUB_SHA" ]]; then
+            echo "::notice::The tested commit is no longer the head of main; latest was not changed."
+            exit 0
+          fi
+          docker tag kb-portfolio:production "$IMAGE:latest"
+          docker push "$IMAGE:latest"
+
+      - name: Logout
+        if: always()
+        run: docker logout ghcr.io

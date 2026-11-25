@@ -7,6 +7,8 @@
 - Fundação SPA bilíngue com rotas localizadas, troca de idioma, páginas mínimas e 404.
 - Identidade Crimson Void em tokens Tailwind, fontes variáveis locais e grid responsivo.
 - Testes de fundação com Vitest e Playwright, CI e documentação do projeto.
+- Docker opcional para Vite e Nginx, com sincronização de dependências, smoke tests HTTP e validação do hardening.
+- Análise da imagem de produção com Trivy e configuração de distribuição condicionada no GHCR, sem deploy.
 
 ### Alterado
 
@@ -14,6 +16,7 @@
 - Ícone do 404 migrado de `lucide-vue-next` para o sucessor oficial `@lucide/vue`, sem alteração visual.
 - Validação no Chromium reforçada para foco visível, preservação de fragmento e ícone decorativo do 404.
 - Git ignora arquivos locais de ambiente e registros de revisão.
+- Pipeline nativa reutilizável, executada uma vez por evento, e E2E com suporte a servidor externo.
 
 ### Removido
 
