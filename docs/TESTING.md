@@ -9,8 +9,8 @@ pnpm check
 `check` executa lint sem correções, verificação de formatação, Vitest em execução única e build (incluindo `vue-tsc` para aplicação, configuração, testes unitários e E2E). Não reescreve código-fonte.
 
 - `pnpm test:unit`: observação local.
-- `pnpm test:unit:run`: execução única com Vitest, jsdom e Vue Test Utils. Cobre resolução de rotas, parâmetros preservados, fallback do 404, mensagem renderizada, idioma e título do documento.
-- `pnpm test:e2e`: Chromium headless em servidor Vite dedicado (`127.0.0.1:4174`). Cobre URL direta, troca de idioma com query e fragmento, histórico, foco visível, 404, grid em 320 px e 1440 px e fontes locais. Libere a porta antes de executar; não há reutilização silenciosa de outro servidor.
+- `pnpm test:unit:run`: execução única com Vitest, jsdom e Vue Test Utils. Preserva a cobertura de rotas, idioma e metadados, e verifica os contratos dos componentes Crimson Void.
+- `pnpm test:e2e`: Chromium headless em Vite dev dedicado (`127.0.0.1:4174`) localmente. O projeto `chromium` cobre rotas públicas, foco, 404, grid e fontes locais. O projeto `design-system` cobre o playground separadamente. Libere a porta antes de executar; não há reutilização silenciosa de outro servidor.
 
 Para instalar o Chromium headless isolado no workspace, siga o [README](../README.md). Se o sistema já tiver Chromium, não é necessário baixar outro navegador para uma verificação local:
 
@@ -25,9 +25,54 @@ pnpm build
 CI=true PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" pnpm test:e2e
 ```
 
+### Crimson Void
+
+Em desenvolvimento, execute só a suíte do playground e opcionalmente capture a página
+inteira com as fontes carregadas:
+
+```sh
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium \
+  PLAYWRIGHT_DESIGN_SYSTEM_SCREENSHOTS=1 \
+  pnpm test:e2e --project=design-system
+```
+
+São verificados os spans computados, a ordem de leitura e de Tab, ativação nativa,
+disabled, nomes acessíveis, alvos de 44 px, foco, contraste a partir dos estilos
+computados e `prefers-reduced-motion`. O teste valida a ausência de overflow
+horizontal em **320, 375, 768, 1024 e 1440 px** e com fonte raiz de **200% em 320 px**.
+Esse último teste simula ampliação de texto, não a interface de zoom do navegador.
+Na revisão local, o zoom real do Chromium também foi verificado no Vite do Docker:
+com zoom de **200%**, uma largura de 640 px passou a 320 px CSS, sem rolagem horizontal.
+Para reproduzir, ajuste a janela no navegador, aplique zoom de 200% e compare
+`window.innerWidth` com `document.documentElement.scrollWidth`.
+
+As capturas são `review-receipts/crimson-void/design-system-{320,375,768,1440}.png`.
+O diretório é ignorado pelo Git. As imagens são evidências para revisão, não
+baselines de regressão de pixels: a CI não depende da versão local do Chromium ou
+da rasterização de fontes.
+
+Com `CI=true` ou `PLAYWRIGHT_BASE_URL`, a configuração executa apenas `chromium`
+e acrescenta `production.spec.ts`: abrir `/dev/design-system` deve renderizar o
+404 em PT-BR, sem anunciar o playground nem requisitar seu chunk. A URL pode
+receber HTTP 200 por causa do fallback SPA; o 404 é renderizado pelo router.
+
+Para inspecionar o conteúdo emitido, além de testar a navegação:
+
+```sh
+pnpm exec vite build --manifest
+rg -i 'dev/design-system|crimson-void-playground|designsystempage|specimens|swatch-color' \
+  dist/.vite/manifest.json dist/assets
+```
+
+O resultado esperado é **nenhuma ocorrência** (`rg` retorna 1). O manifesto deve
+listar `index.html` e as páginas públicas, sem `src/dev/`. Execute o teste de
+produção contra esse build, via Preview ou Nginx. Uma captura e esses checks
+não equivalem a uma auditoria WCAG completa; contraste e limites estão no
+[Design System](DESIGN_SYSTEM.md).
+
 ### Nginx
 
-`PLAYWRIGHT_BASE_URL` seleciona um servidor externo e desabilita o servidor próprio do Playwright, inclusive com `CI=true`. Assim, a mesma suíte valida a imagem publicada pelo Compose sem iniciar Vite:
+`PLAYWRIGHT_BASE_URL` seleciona um servidor externo de produção e desabilita o servidor próprio do Playwright, inclusive com `CI=true`. Assim, a suíte pública valida a imagem servida pelo Compose sem iniciar Vite:
 
 ```sh
 docker compose up -d --build --wait production

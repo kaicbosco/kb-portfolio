@@ -54,6 +54,15 @@ export const routes: RouteRecordRaw[] = [
     }),
   },
   ...supportedLocales.flatMap(createLocalizedRoutes),
+  ...(import.meta.env.DEV
+    ? ([
+        {
+          path: '/dev/design-system',
+          component: () => import('@/dev/DesignSystemPage.vue'),
+          meta: { locale: defaultLocale },
+        },
+      ] satisfies RouteRecordRaw[])
+    : []),
   {
     path: '/:pathMatch(.*)*',
     component: notFoundPage,
