@@ -25,8 +25,23 @@ pnpm build
 CI=true PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" pnpm test:e2e
 ```
 
+### Nginx
+
+`PLAYWRIGHT_BASE_URL` seleciona um servidor externo e desabilita o servidor próprio do Playwright, inclusive com `CI=true`. Assim, a mesma suíte valida a imagem publicada pelo Compose sem iniciar Vite:
+
+```sh
+docker compose up -d --build --wait production
+bash docker/check-production.sh
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:8080 \
+  PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium pnpm test:e2e
+```
+
+Use `PLAYWRIGHT_BROWSERS_PATH` no lugar de `PLAYWRIGHT_CHROMIUM_EXECUTABLE` caso prefira o navegador gerenciado. O script também verifica os contratos HTTP e as restrições de runtime: healthcheck, loopback, UID, capabilities, `NoNewPrivs`, tmpfs e bloqueio de escrita na raiz.
+
 ## GitHub Actions
 
-O workflow executa em PRs e pushes para `main`. Usa Node de `.nvmrc`, pnpm de `packageManager` e `pnpm install --frozen-lockfile`. `pnpm check` gera `dist/`; Playwright testa esse build em `127.0.0.1:4173` com um worker. Só são instalados o Chromium headless gerenciado e suas dependências no runner. Se houver falha, `test-results/` é enviado como artefato por até cinco dias. Não há deploy nem correções automáticas.
+O workflow Docker executa em PRs, pushes para `main` e disparos manuais. Invoca `ci.yml` uma única vez por execução. O job nativo usa Node de `.nvmrc`, pnpm de `packageManager` e `pnpm install --frozen-lockfile`. `pnpm check` gera `dist/`; Playwright testa esse build em `127.0.0.1:4173` com um worker.
 
-Firefox, WebKit, tecnologias assistivas e status HTTP de rotas em hospedagem real não são cobertos pela suite atual.
+Em seguida, o job Docker valida Compose, faz os builds, sobe Nginx, roda os testes HTTP, de segurança e Playwright, e analisa a imagem de produção com Trivy. Cada job de navegador instala somente o Chromium headless gerenciado e suas dependências. Em caso de falha, `test-results/`, quando presente, fica disponível por até cinco dias. O [guia Docker](DOCKER.md#cicd) descreve os artefatos, condições de publicação e política de vulnerabilidades. Não há deploy nem correções automáticas.
+
+Firefox, WebKit, tecnologias assistivas e status HTTP em um ambiente de hospedagem externo não são cobertos pela suíte atual.
