@@ -29,6 +29,8 @@ CI=true PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" pnpm test:e2e
 
 `src/__tests__/application-shell.spec.ts` verifica landmarks, links confirmados,
 estado ativo, equivalência de idioma, disclosure, foco e prioridade do scroll salvo.
+O teste de regressão entrega a notificação de `matchMedia` após abrir o menu
+mobile para verificar que o painel permanece aberto e o botão mantém o foco.
 `e2e/application-shell.spec.ts` roda em Dev, Preview e Nginx: teclado, alvos de
 44 px, estados desktop/mobile, idioma, histórico, header sticky, footer, contraste
 dos estados e redução de movimento. Reflow é coberto em 320, 375, 768, 1024 e 1440 px,
@@ -108,6 +110,15 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:8080 \
 ```
 
 Use `PLAYWRIGHT_BROWSERS_PATH` no lugar de `PLAYWRIGHT_CHROMIUM_EXECUTABLE` caso prefira o navegador gerenciado. O script também verifica os contratos HTTP e as restrições de runtime: healthcheck, loopback, UID, capabilities, `NoNewPrivs`, tmpfs e bloqueio de escrita na raiz.
+
+Para investigar a estabilidade do cenário de contraste com o Nginx em execução,
+use o Chromium gerenciado, `CI=true` (um worker) e ajuste a URL à porta publicada:
+
+```sh
+CI=true PLAYWRIGHT_BASE_URL=http://127.0.0.1:8080 \
+  PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" \
+  pnpm test:e2e e2e/application-shell.spec.ts --grep 'preserves Crimson Void' --repeat-each 20
+```
 
 ## GitHub Actions
 

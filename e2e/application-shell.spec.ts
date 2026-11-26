@@ -233,7 +233,11 @@ test('preserves Crimson Void contrast, interaction states and reduced motion', a
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/en')
   const banner = page.getByRole('banner')
-  const home = banner.getByRole('link', { name: 'Home', exact: true })
+  const primary = { name: 'Main navigation', exact: true }
+  const home = banner.getByRole('navigation', primary).getByRole('link', {
+    name: 'Home',
+    exact: true,
+  })
   await expect(home).not.toHaveCSS('transition-duration', '0s')
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(home).toHaveCSS('transition-duration', '0s')
@@ -260,11 +264,19 @@ test('preserves Crimson Void contrast, interaction states and reduced motion', a
     expect((await readContrast(item)).text).toBeGreaterThanOrEqual(4.5)
   }
   await page.setViewportSize({ width: 375, height: 812 })
-  const toggle = page.getByRole('button', { name: /navigation menu/ })
+  const toggle = banner.getByRole('button', { name: /navigation menu/ })
   await expect(toggle).toHaveCSS('transition-duration', '0s')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  await expect(home).toHaveCount(0)
   await toggle.press('Space')
-  await expect(home).toBeVisible()
-  expect((await readContrast(home)).decoration).toBeGreaterThanOrEqual(3)
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+  await expect(toggle).toBeFocused()
+  const mobileHome = banner
+    .locator('#mobile-primary-navigation')
+    .getByRole('navigation', primary)
+    .getByRole('link', { name: 'Home', exact: true })
+  await expect(mobileHome).toBeVisible()
+  expect((await readContrast(mobileHome)).decoration).toBeGreaterThanOrEqual(3)
 })
 
 if (process.env.PLAYWRIGHT_SHELL_SCREENSHOTS === '1') {

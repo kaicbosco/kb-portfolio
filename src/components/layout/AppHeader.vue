@@ -87,7 +87,8 @@ function onBreakpointChange({ matches: desktop }: MediaQueryListEvent) {
   } else if (!desktop && desktopNav.value?.contains(active)) {
     getToggle()?.focus({ preventScroll: true })
   }
-  closeMenu()
+  // The mobile toggle can already be used before its media-query notification arrives.
+  if (desktop) closeMenu()
 }
 
 let media: MediaQueryList | undefined

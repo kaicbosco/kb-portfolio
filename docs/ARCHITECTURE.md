@@ -38,9 +38,11 @@ para o fim da viewport em páginas curtas e o deixa no fluxo nas longas.
 
 `PrimaryNavigation` é compartilhado pela versão horizontal (`lg`, a partir de
 64 rem) e pela vertical. O CSS oculta a versão inativa; o JavaScript observa esse
-mesmo breakpoint apenas para fechar o disclosure e transferir foco do controle que
-some para o seu equivalente. Não há modal, trap, bloqueio de scroll nem estado de
-menu fora do header. Início é o único destino principal e recebe `aria-current="page"`
+mesmo breakpoint para transferir foco do controle que some para o seu equivalente.
+O disclosure é fechado ao entrar no desktop, não ao voltar para mobile: a
+notificação de `matchMedia` pode chegar depois de o botão já estar visível e ter
+sido acionado. Não há modal, trap, bloqueio de scroll nem estado de menu fora do
+header. Início é o único destino principal e recebe `aria-current="page"`
 apenas na homepage do idioma atual; projeto, 404 e playground não marcam Início.
 Leia [UX/UI](UX_UI.md#application-shell) para a arquitetura de informação.
 

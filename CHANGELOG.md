@@ -24,6 +24,10 @@
 - Tokens Crimson Void para tipografia, espaçamento, foco e estados interativos, com grid de oito colunas no tablet e acento vermelho no ponto da marca.
 - Layout interno delegado às páginas; foco e scroll distinguem mudanças de página, query, fragmento e histórico.
 
+### Corrigido
+
+- Menu mobile permanece aberto quando a notificação de breakpoint chega depois da ativação; os testes verificam estado, foco e contraste no painel correto.
+
 ### Removido
 
 - Interface e testes de demonstração do Vue, favicon do scaffold e dependências auxiliares dispensáveis.

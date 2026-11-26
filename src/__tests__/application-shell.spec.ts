@@ -12,6 +12,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 async function mountShell(path: string) {
@@ -101,6 +102,31 @@ describe('application shell', () => {
       expect(panel.isVisible()).toBe(false)
       expect(toggle.attributes('aria-label')).toBe('Open navigation menu')
       expect(document.activeElement).toBe(wrapper.get('main').element)
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('keeps a newly opened mobile disclosure open when the breakpoint notification arrives late', async () => {
+    const media = Object.assign(new EventTarget(), { matches: true })
+    vi.stubGlobal('matchMedia', () => media)
+    const { wrapper } = await mountShell('/en')
+
+    try {
+      const toggle = wrapper.get<HTMLButtonElement>('button[aria-controls]')
+      const panel = wrapper.get(`#${toggle.attributes('aria-controls')}`)
+
+      // The CSS already exposes the mobile button, but the change event is still pending.
+      media.matches = false
+      toggle.element.focus()
+      await toggle.trigger('click')
+      expect(toggle.attributes('aria-expanded')).toBe('true')
+      media.dispatchEvent(Object.assign(new Event('change'), { matches: media.matches }))
+      await flushPromises()
+
+      expect(toggle.attributes('aria-expanded')).toBe('true')
+      expect(panel.isVisible()).toBe(true)
+      expect(document.activeElement).toBe(toggle.element)
     } finally {
       wrapper.unmount()
     }
