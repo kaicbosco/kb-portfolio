@@ -53,6 +53,94 @@ aplique 200% e compare `document.documentElement.clientWidth` e `scrollWidth` (a
 barra vertical pode reduzir a largura útil em relação a `innerWidth`). Depois,
 repita com o menu aberto e em ambos os idiomas.
 
+### Hero e Digital Core
+
+`src/__tests__/hero.spec.ts` verifica o conteúdo nos dois catálogos, o título,
+CTAs, cards, preferência manual, prioridade de redução de movimento, APIs de
+visibilidade, limites magnéticos e limpeza. `e2e/hero.spec.ts` verifica o Hero
+nos três servidores. Os testes comparam o retângulo e a transformação da moldura,
+grade e rótulos antes e depois de mover o ponteiro. Também verificam que a órbita
+continua avançando durante a inclinação, que a geometria cabe no stage e que o
+grupo magnético retorna ao centro depois de `pointerleave`.
+
+A matriz é **1920×1080, 1440×900, 1024×768, 768×1024, 375×812, 320×568 e
+1440×350**, em PT-BR e EN. Ela verifica layout normal e `font-size: 200%` na
+raiz. Esse segundo caso testa ampliação de texto. Para reproduzir o zoom
+nativo, abra uma janela do Chromium com `innerWidth` de 640 px a 100%, aplique
+200% pela interface do navegador e confirme `innerWidth` de 320 px. A área
+útil pode ser menor com barra de rolagem. Compare `clientWidth` e `scrollWidth`
+com o menu aberto e fechado e nos dois idiomas. Repita com a janela ajustada
+ao dobro das demais larguras da matriz. A troca real de abas também permite
+verificar a suspensão pela Page Visibility API.
+
+Para produzir as capturas locais do Hero no Vite Preview:
+
+```sh
+pnpm build
+CI=true PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" \
+  PLAYWRIGHT_HERO_SCREENSHOTS=1 pnpm test:e2e e2e/hero.spec.ts
+```
+
+Artefatos em `review-receipts/hero-digital-core/`, ignorados pelo Git. Nos
+recortes magnéticos, as animações contínuas são fixadas na mesma fase; o
+movimento do ponteiro continua habilitado para comparar as poses.
+Os testes de movimento podem ser repetidos contra o Nginx com um worker:
+
+```sh
+CI=true PLAYWRIGHT_BASE_URL=http://127.0.0.1:28080 \
+  PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" \
+  pnpm test:e2e e2e/hero.spec.ts \
+  --grep 'keyboard interaction|pauses Precision|system reduced|tilts only|limits mobile' \
+  --repeat-each 5
+```
+
+#### Medição local de performance do Hero
+
+Compare o `dist/` da baseline (`4b7e368`) com o build do Hero, somando bytes
+originais e gzip individualmente por extensão. Para o SVG, some `outerHTML`
+dos dois elementos `.core-svg` em UTF-8, incluindo atributos de scoping do Vue.
+O JavaScript de movimento está no chunk da homepage; a estimativa comprime os
+dois composables e os blocos de script de `HeroSection` e `DigitalCore`
+transpilados, sem minificação. Ela inclui a integração dos componentes e
+exclui o código de renderização gerado a partir dos templates.
+
+| Artefatos                            | Baseline (bytes / gzip) | Hero (bytes / gzip) |
+| ------------------------------------ | ----------------------- | ------------------- |
+| Todos os chunks JavaScript           | 163.468 / 62.409        | 181.919 / 69.698    |
+| Todas as folhas de estilos           | 22.015 / 5.426          | 30.422 / 7.950      |
+| Fontes WOFF2                         | 110.948 / 111.007       | 110.948 / 111.007   |
+| SVG inline, serializado              | —                       | 6.449 / 1.376       |
+| JavaScript de movimento (estimativa) | —                       | 6.206 / 1.706       |
+
+Na página de produção em loopback, use um contexto Chromium novo, 1440×900,
+registre as requisições e observe `largest-contentful-paint` e `layout-shift`.
+Depois da entrada, compare duas amostras de seis segundos com o Core visível
+e o ponteiro parado, uma em Precision Motion e outra em pausa. O trace CDP
+permite observar pintura e layout; a cadência dos callbacks do navegador é
+uma indicação de ritmo, sem medir frames apresentados ao usuário. Dados de
+campo, INP e comportamento em outros dispositivos exigem medições próprias.
+
+O carregamento observado de `/en` passou de 10 para 13 requisições, contando
+o documento. As três adicionais são locais: um chunk de JS e dois de CSS.
+O SVG é inline e não solicita fontes, imagens ou outros recursos exclusivos.
+Os tamanhos gzip da tabela são calculados a partir dos arquivos, sem atribuir
+essa codificação à resposta do Nginx.
+
+Na amostra com Chrome Headless Shell 159.0.8154.6, o LCP foi **116 ms** e o
+CLS foi **0,00073**, com deslocamento observado no `h1` e no seu ponto
+vermelho, e zero ocorrências atribuídas ao Digital Core. Em Precision Motion,
+a cadência foi de 60 callbacks/s, com intervalo
+p95 de 16,8 ms. Em seis segundos, foram registrados 724 eventos de pintura
+(72,32 ms acumulados) e 362 de layout (16,35 ms). Na amostra em pausa não
+houve eventos de pintura, layout ou rasterização. Os rastros CDP e demais
+dados ficam em `review-receipts/hero-digital-core/`.
+
+O contraste dos textos renderizados foi de 6,76:1 nas categorias, 17,02:1
+nos valores, 7,30:1 nas descrições dos cards e 7,19:1 no subtítulo e eyebrow.
+O menor contraste de texto dos controles ativos medidos foi 4,83:1 (CTA
+primário em repouso); o contorno de `focus-visible` foi 7,19:1 contra o fundo.
+Esses resultados cobrem as combinações testadas.
+
 ### Crimson Void
 
 Em desenvolvimento, execute só a suíte do playground e opcionalmente capture a página
@@ -109,7 +197,7 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:8080 \
   PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium pnpm test:e2e
 ```
 
-Use `PLAYWRIGHT_BROWSERS_PATH` no lugar de `PLAYWRIGHT_CHROMIUM_EXECUTABLE` caso prefira o navegador gerenciado. O script também verifica os contratos HTTP e as restrições de runtime: healthcheck, loopback, UID, capabilities, `NoNewPrivs`, tmpfs e bloqueio de escrita na raiz.
+Use `PLAYWRIGHT_BROWSERS_PATH` no lugar de `PLAYWRIGHT_CHROMIUM_EXECUTABLE` caso prefira o navegador gerenciado. O script também verifica os contratos HTTP e as restrições de runtime: healthcheck, loopback, UID, capabilities, `NoNewPrivs`, tmpfs e bloqueio de escrita na raiz. Valida MIME e cache para as folhas referenciadas no HTML e as fontes WOFF2 encontradas nelas, inclusive quando o CSS é dividido em chunks.
 
 Para investigar a estabilidade do cenário de contraste com o Nginx em execução,
 use o Chromium gerenciado, `CI=true` (um worker) e ajuste a URL à porta publicada:

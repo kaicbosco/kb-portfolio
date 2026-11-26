@@ -11,4 +11,4 @@ KB. Portfolio apresenta a experiência, as competências, os projetos e a forma�
 
 ## Limites da entrega
 
-O primeiro handoff contempla arquitetura, manutenção, testes e páginas mínimas. Não contempla identidade visual final, Digital Core, conteúdo profissional definitivo, estudos de caso completos ou funcionalidades de servidor. Consulte o [roadmap](ROADMAP.md) para as etapas seguintes.
+A fundação estabeleceu arquitetura, manutenção, testes e páginas mínimas. A homepage já tem o Hero bilíngue, o Digital Core e o Bento Strip. Consulte o [roadmap](ROADMAP.md) para o escopo dos estudos de caso e das demais seções.

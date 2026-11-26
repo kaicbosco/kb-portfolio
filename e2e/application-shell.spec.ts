@@ -32,8 +32,10 @@ for (const width of widths) {
       await expect(page.getByRole('banner')).toHaveCSS('position', 'sticky')
       await expect(page.getByRole('banner')).toHaveCSS('height', width < desktop ? '65px' : '73px')
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
-      expect((await footer.boundingBox())?.y).toBeGreaterThan(0)
-      expect(await footer.evaluate((el) => el.getBoundingClientRect().bottom)).toBe(height)
+      const mainBounds = (await page.getByRole('main').boundingBox())!
+      expect((await footer.boundingBox())!.y).toBeGreaterThanOrEqual(
+        mainBounds.height + mainBounds.y,
+      )
       await expectTarget(brand)
       await expectTarget(languages.getByRole('link'))
       await expectTarget(footer.getByRole('link', { name: 'LinkedIn' }))
@@ -48,6 +50,10 @@ for (const width of widths) {
       await expect(home).toHaveCSS('text-decoration-line', 'underline')
       await expectTarget(home)
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width)
+
+      await page.goto(pt ? '/pt/projetos/codex-usage' : '/en/projects/codex-usage')
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(pt ? 'Projeto' : 'Project')
+      expect(await footer.evaluate((el) => el.getBoundingClientRect().bottom)).toBe(height)
     }
   })
 }
@@ -62,6 +68,7 @@ test('opens by keyboard, closes on Escape, and skips the closed panel in Tab ord
   const language = page.getByRole('link', { name: 'English' })
   const toggle = page.getByRole('button', { name: /menu de navegação/ })
   const home = page.getByRole('link', { name: 'Início', exact: true })
+  await expect(skip).toBeAttached()
   for (const target of [skip, brand, language, toggle]) {
     await page.keyboard.press('Tab')
     await expect(target).toBeFocused()
@@ -71,7 +78,7 @@ test('opens by keyboard, closes on Escape, and skips the closed panel in Tab ord
   await expect(toggle).toHaveAccessibleName('Abrir menu de navegação')
   await expect(toggle).toHaveAttribute('aria-expanded', 'false')
   await page.keyboard.press('Tab')
-  await expect(page.getByRole('link', { name: 'GitHub' })).toBeFocused()
+  await expect(page.getByRole('link', { name: 'Ver GitHub' })).toBeFocused()
   await page.keyboard.press('Shift+Tab')
   await page.keyboard.press('Space')
   await expect(toggle).toHaveAccessibleName('Fechar menu de navegação')
@@ -109,7 +116,7 @@ test('closes and transfers focus between responsive controls on breakpoint chang
   await expect(toggle).toBeFocused()
   await expect(toggle).toHaveAttribute('aria-expanded', 'false')
   await expect(home).toHaveCount(0)
-  const footerLink = page.getByRole('link', { name: 'GitHub' })
+  const footerLink = page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' })
   await footerLink.focus()
   await page.setViewportSize({ width: 1024, height: 850 })
   await expect(home).toBeVisible()
@@ -259,7 +266,7 @@ test('preserves Crimson Void contrast, interaction states and reduced motion', a
     banner.getByRole('link', { name: 'Português (Brasil)' }),
     banner.locator('[aria-current="true"]'),
     page.getByRole('contentinfo').locator('small'),
-    page.getByRole('link', { name: 'GitHub' }),
+    page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' }),
   ]) {
     expect((await readContrast(item)).text).toBeGreaterThanOrEqual(4.5)
   }

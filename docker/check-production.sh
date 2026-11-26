@@ -76,15 +76,26 @@ echo 'PASS: SPA fallback in both languages, favicon, HTML revalidation and asset
 
 immutable='Cache-Control: public, max-age=31536000, immutable'
 js=$(grep -oE '/assets/[^"]+\.js' "$work/index" | sed -n '1p')
-css=$(grep -oE '/assets/[^"]+\.css' "$work/index" | sed -n '1p')
 get "$js" 200
 grep -Eqi '^Content-Type: (application|text)/javascript$' "$work/headers"
 header "$immutable"
-get "$css" 200
-header 'Content-Type: text/css'
-header "$immutable"
-font=$(grep -oE '/assets/[^()"]+\.woff2' "$work/body" | sed -n '1p')
-get "$font" 200
-header 'Content-Type: font/woff2'
-header "$immutable"
+
+# O Vite pode emitir folhas compartilhadas sem declarações de fonte.
+mapfile -t stylesheets < <(grep -oE '/assets/[^"]+\.css' "$work/index")
+[[ ${#stylesheets[@]} -gt 0 ]]
+fonts=()
+for css in "${stylesheets[@]}"; do
+    get "$css" 200
+    header 'Content-Type: text/css'
+    header "$immutable"
+    while IFS= read -r font; do
+        fonts+=("$font")
+    done < <(grep -oE '/assets/[^()"]+\.woff2' "$work/body")
+done
+[[ ${#fonts[@]} -gt 0 ]]
+for font in "${fonts[@]}"; do
+    get "$font" 200
+    header 'Content-Type: font/woff2'
+    header "$immutable"
+done
 echo 'PASS: JavaScript, CSS and WOFF2 MIME types and immutable hashed assets'

@@ -7,8 +7,8 @@ test('redirects the root and provides a keyboard shortcut to the main content', 
 
   await expect(page).toHaveURL(/\/pt$/)
   await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR')
-  await expect(page).toHaveTitle('KB. Portfolio')
-  await expect(page.getByRole('heading', { level: 1, name: 'KB. Portfolio' })).toBeVisible()
+  await expect(page).toHaveTitle('Kaíque Bosco — Desenvolvedor Frontend')
+  await expect(page.getByRole('heading', { level: 1, name: 'Kaíque Bosco.' })).toBeVisible()
 
   const skipLink = page.getByRole('link', { name: 'Pular para o conteúdo' })
   await page.keyboard.press('Tab')

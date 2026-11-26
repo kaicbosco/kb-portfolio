@@ -1,6 +1,6 @@
 # KB. Portfolio
 
-Portfólio profissional de Kaíque Bosco, desenvolvedor front-end e estudante de Engenharia de Software. A versão atual inclui a fundação bilíngue, o Design System Crimson Void e o shell responsivo. As seções e os estudos de caso definitivos ainda não foram implementados.
+Portfólio profissional de Kaíque Bosco Araújo, desenvolvedor frontend e estudante de Engenharia de Software. A homepage bilíngue apresenta o Hero Crimson Core, o Digital Core em SVG com controle de animações e quatro cards de informações profissionais. As demais seções e os estudos de caso definitivos estão no [roadmap](docs/ROADMAP.md).
 
 ## Desenvolvimento local
 
