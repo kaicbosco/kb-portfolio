@@ -6,21 +6,62 @@
 | ------------------------- | -------------------------------------------------------------------------- |
 | `src/main.ts`             | Criar app, router e i18n; carregar estilos; montar após navegação inicial. |
 | `src/App.vue`             | Compor layout e página; sincronizar catálogo, `html[lang]` e título.       |
-| `src/router/`             | Declarar rotas, metadados e destinos equivalentes por idioma.              |
+| `src/router/`             | Declarar rotas, metadados, destinos equivalentes e política de scroll.     |
 | `src/i18n/`               | Definir idiomas, fallback e catálogos de interface com a mesma estrutura.  |
 | `src/layouts/`            | Prover landmarks, acesso rápido ao conteúdo e foco em mudanças de rota.    |
-| `src/components/layout/`  | Prover container, Bento Grid e navegação de idiomas com links reais.       |
+| `src/components/layout/`  | Prover container, Bento Grid, cabeçalho, navegações e rodapé.              |
 | `src/components/ui/`      | Prover primitivas de ação, superfície e metadados.                         |
 | `src/components/shared/`  | Padronizar a apresentação semântica de títulos e status.                   |
 | `src/dev/`                | Compor o catálogo visual, carregado apenas pelo Vite dev.                  |
 | `src/pages/`              | Renderizar a inicial, o placeholder de projeto e o 404.                    |
 | `src/assets/styles/`      | Centralizar tokens, fontes, estilos globais e utilitários Tailwind.        |
-| `src/constants/`          | Centralizar identificadores estáveis da marca.                             |
+| `src/constants/`          | Centralizar identidade da marca e perfis públicos confirmados.             |
 | `src/__tests__/` e `e2e/` | Testar integração Vue/router/i18n e fluxos em navegador.                   |
 
 As páginas não são duplicadas por idioma. Cada tipo de página tem um componente carregado sob demanda pelo router. `ProjectPage` recebe `slug` como prop tipada; nenhuma página faz acesso a backend. Diretórios como `sections/`, `content/` e `composables/` serão criados quando houver seções, dados editoriais e comportamentos reutilizáveis concretos.
 
 Os catálogos de interface são pequenos e carregados junto com a aplicação. O Vite exclui a API legada e o registro global de componentes e diretivas do Vue I18n; a interface usa `useI18n`. Avaliar a pré-compilação de mensagens quando o catálogo crescer.
+
+## Application Shell
+
+| Componente          | Contrato e responsabilidade                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------- |
+| `DefaultLayout`     | Slot `default` para `RouterView`; compõe skip link, header, um único `main` e footer.          |
+| `AppHeader`         | Sem props; resolve a inicial localizada e controla o disclosure, o breakpoint e a altura real. |
+| `PrimaryNavigation` | `home: RouteLocationRaw`, `vertical?: boolean`; evento `select(MouseEvent)` ao acionar Início. |
+| `LanguageSwitcher`  | Sem props; renderiza PT/EN e usa `languageTarget` para montar a URL alternativa.               |
+| `AppFooter`         | Sem props; renderiza marca, ano corrente e perfis públicos confirmados.                        |
+
+O layout não aplica grid nem gutters ao `main`. Páginas podem usar `AppContainer` e
+compor seus próprios grids ou regiões full-bleed. O flex do shell empurra o rodapé
+para o fim da viewport em páginas curtas e o deixa no fluxo nas longas.
+
+`PrimaryNavigation` é compartilhado pela versão horizontal (`lg`, a partir de
+64 rem) e pela vertical. O CSS oculta a versão inativa; o JavaScript observa esse
+mesmo breakpoint para transferir foco do controle que some para o seu equivalente.
+O disclosure é fechado ao entrar no desktop, não ao voltar para mobile: a
+notificação de `matchMedia` pode chegar depois de o botão já estar visível e ter
+sido acionado. Não há modal, trap, bloqueio de scroll nem estado de menu fora do
+header. Início é o único destino principal e recebe `aria-current="page"`
+apenas na homepage do idioma atual; projeto, 404 e playground não marcam Início.
+Leia [UX/UI](UX_UI.md#application-shell) para a arquitetura de informação.
+
+O skip link foca e rola até `main`, sem gravar fragmento na URL. Depois de uma mudança
+de caminho, o foco vai para o fragmento real dentro de `main` ou, se não houver,
+para o próprio landmark. Alterações de query não movem o foco; alterações de hash
+só o movem se houver alvo real dentro de `main`. Um alvo sem foco nativo recebe
+`tabindex="-1"` temporário, sem entrar na ordem de Tab. O carregamento direto não
+rouba o foco inicial.
+
+`router/scroll.ts` prioriza a posição salva de voltar/avançar. Fora do histórico, rola
+para o ID real, com `scroll-padding` do documento e `scroll-margin` do alvo, ou para
+o topo em uma nova página sem alvo. Query e hash inexistente no mesmo caminho não
+reiniciam a rolagem. Um `ResizeObserver` atualiza apenas a compensação da altura
+real do header (inclusive menu e reflow). Em viewports abaixo de 30 rem de altura,
+o header deixa de ser sticky. Não há smooth scrolling obrigatório.
+
+Consulte o [ADR 0003](adr/0003-application-shell.md) para os limites entre shell,
+páginas e navegação.
 
 ## Rotas
 

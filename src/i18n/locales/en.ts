@@ -4,6 +4,11 @@ const en = {
   layout: {
     skipToContent: 'Skip to content',
     languages: 'Languages',
+    primaryNavigation: 'Main navigation',
+    home: 'Home',
+    openMenu: 'Open navigation menu',
+    closeMenu: 'Close navigation menu',
+    copyright: '© {year} {name}',
   },
   pages: {
     home: {

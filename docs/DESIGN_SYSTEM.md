@@ -4,13 +4,14 @@
 
 Use superfícies escuras, geometria precisa, tipografia técnica e vermelho para hierarquia,
 ação e foco. Preserve a marca `KB.` e o ponto vermelho. O destaque de um card é uma
-linha fina, não um glow. A fundação visual está disponível para revisão; ela não define
-a homepage nem o futuro Application Shell.
+linha fina, não um glow. O Application Shell aplica esses fundamentos sem definir
+o conteúdo da homepage.
 
 - [Tokens e contraste](#tokens-e-contraste)
 - [Tipografia e layout](#tipografia-e-layout)
 - [Componentes](#componentes)
 - [Composição](#composição)
+- [Application Shell](#application-shell)
 - [Playground e validação](#playground-e-validação)
 
 ## Tokens e contraste
@@ -178,6 +179,16 @@ Valores inválidos inesperados usam a largura total. Classes Tailwind estáticas
 consomem os spans via custom properties; CSS Grid calcula o layout sem medições JS.
 Não use `dense`, reordenação por CSS ou alturas fixas que prejudiquem conteúdo,
 ordem de leitura e sequência de foco.
+
+## Application Shell
+
+Header e footer usam `AppContainer`; o toggle e os links sociais usam `BaseButton`
+ghost. A marca usa Space Grotesk e ponto `accent`; o seletor compacto usa
+JetBrains Mono, com superfície elevada indicando o idioma atual. Os links principais
+usam texto `muted`/`foreground`, sublinhado `accent` no destino atual e o foco global.
+`shell-nav-item` limita a transição aos estados de link e respeita redução de
+movimento. O disclosure abre e fecha sem animar a altura. O shell não adiciona
+tokens nem altera a escala e a apresentação dos primitivos.
 
 ## Playground e validação
 

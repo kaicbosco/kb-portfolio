@@ -11,6 +11,8 @@
 - Análise da imagem de produção com Trivy e configuração de distribuição condicionada no GHCR, sem deploy.
 - APIs reutilizáveis de botão, card, badge, container, Bento Grid, heading e indicador de status.
 - Catálogo visual em `/dev/design-system`, exclusivo de Vite dev, e testes de componentes, reflow, teclado, contraste e exclusão do catálogo em produção.
+- Application Shell bilíngue com cabeçalho sticky, disclosure mobile, estados de navegação, seletor PT/EN e footer básico com perfis confirmados.
+- Testes do shell para teclado, reflow, contraste, histórico e âncoras, com capturas opcionais para revisão humana.
 
 ### Alterado
 
@@ -20,6 +22,11 @@
 - Git ignora arquivos locais de ambiente e registros de revisão.
 - Pipeline nativa reutilizável, executada uma vez por evento, e E2E com suporte a servidor externo.
 - Tokens Crimson Void para tipografia, espaçamento, foco e estados interativos, com grid de oito colunas no tablet e acento vermelho no ponto da marca.
+- Layout interno delegado às páginas; foco e scroll distinguem mudanças de página, query, fragmento e histórico.
+
+### Corrigido
+
+- Menu mobile permanece aberto quando a notificação de breakpoint chega depois da ativação; os testes verificam estado, foco e contraste no painel correto.
 
 ### Removido
 

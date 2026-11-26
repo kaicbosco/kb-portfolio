@@ -1,6 +1,6 @@
 # KB. Portfolio
 
-Portfólio profissional de Kaíque Bosco, desenvolvedor front-end e estudante de Engenharia de Software. A versão atual entrega a fundação técnica bilíngue; a interface e os estudos de caso definitivos ainda não foram implementados.
+Portfólio profissional de Kaíque Bosco, desenvolvedor front-end e estudante de Engenharia de Software. A versão atual inclui a fundação bilíngue, o Design System Crimson Void e o shell responsivo. As seções e os estudos de caso definitivos ainda não foram implementados.
 
 ## Desenvolvimento local
 
@@ -48,7 +48,7 @@ O Vite fica em `http://127.0.0.1:5173` e o Nginx em `http://127.0.0.1:8080`. Exe
 
 ## Documentação
 
-- [Projeto](docs/PROJECT.md), [arquitetura](docs/ARCHITECTURE.md) e [ADR de internacionalização](docs/adr/0001-rotas-localizadas.md)
+- [Projeto](docs/PROJECT.md), [arquitetura](docs/ARCHITECTURE.md) e [ADRs](docs/adr/)
 - [Design system](docs/DESIGN_SYSTEM.md) e [UX/UI](docs/UX_UI.md)
 - [Conteúdo](docs/CONTENT.md) e [roadmap](docs/ROADMAP.md)
 - [Testes e CI](docs/TESTING.md), [Docker](docs/DOCKER.md), [regras para agentes](AGENTS.md) e [changelog](CHANGELOG.md)

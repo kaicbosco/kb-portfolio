@@ -18,18 +18,24 @@ const activeLocale = computed(() => route.meta.locale ?? defaultLocale)
           v-if="locale === activeLocale"
           :lang="localeDetails[locale].languageTag"
           aria-current="true"
-          class="inline-flex min-h-11 items-center px-2 text-sm font-semibold"
+          class="inline-flex min-h-target min-w-target items-center justify-center rounded-md border border-border bg-surface-elevated px-2 font-mono text-caption font-semibold text-foreground"
         >
-          {{ localeDetails[locale].label }}
+          <span aria-hidden="true">{{ localeDetails[locale].shortLabel }}</span>
+          <span class="sr-only"
+            >{{ localeDetails[locale].shortLabel }} — {{ localeDetails[locale].label }}</span
+          >
         </span>
         <RouterLink
           v-else
           :to="languageTarget(route, locale)"
           :lang="localeDetails[locale].languageTag"
           :hreflang="localeDetails[locale].languageTag"
-          class="inline-flex min-h-11 items-center px-2 text-sm text-accent underline underline-offset-4"
+          class="shell-nav-item px-2 font-mono"
         >
-          {{ localeDetails[locale].label }}
+          <span aria-hidden="true">{{ localeDetails[locale].shortLabel }}</span>
+          <span class="sr-only"
+            >{{ localeDetails[locale].shortLabel }} — {{ localeDetails[locale].label }}</span
+          >
         </RouterLink>
       </li>
     </ul>
