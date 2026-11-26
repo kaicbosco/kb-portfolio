@@ -12,6 +12,7 @@ o conteúdo da homepage.
 - [Componentes](#componentes)
 - [Composição](#composição)
 - [Application Shell](#application-shell)
+- [Hero Crimson Core](#hero-crimson-core)
 - [Playground e validação](#playground-e-validação)
 
 ## Tokens e contraste
@@ -189,6 +190,25 @@ usam texto `muted`/`foreground`, sublinhado `accent` no destino atual e o foco g
 `shell-nav-item` limita a transição aos estados de link e respeita redução de
 movimento. O disclosure abre e fecha sem animar a altura. O shell não adiciona
 tokens nem altera a escala e a apresentação dos primitivos.
+
+## Hero Crimson Core
+
+O nome usa Space Grotesk 700, entrelinha 1, tracking de `-0.05em` e referências
+de 56/88/112 px. O limite relativo à largura da introdução mantém as duas linhas
+intencionais em larguras estreitas com ampliação de texto. O título profissional
+usa Space Grotesk 600, com 24/28/32 px. Formação usa Inter 500 em
+`text-body`/`text-lead`, descrição usa `text-body` e o eyebrow usa JetBrains Mono
+500 em `text-caption`. Eyebrow, formação e categorias usam `accent`.
+
+O grid do Hero usa 20 px de gap no tablet, com os mesmos gutters de
+`AppContainer` e os spans de `BentoGrid`/`BentoCard`. Os cards usam a variante
+`standard`, padding responsivo do primitivo, ícone de 20 px em área de 40 px com
+`primary` a 10%, categoria de 14 px/600, valor de 20 px/600 e descrição de 14 px.
+Número e ícone são decorativos. O preenchimento, borda e foco dos CTAs e do
+controle de movimento vêm de `BaseButton`. Os CTAs usam a variante primária
+e secundária em `lg`, inclusive a transição de cor já existente de 140 ms.
+Em tablet e desktop, CSS Subgrid alinha categorias, valores e descrições
+entre os cards da mesma linha, com altura definida pelo próprio conteúdo.
 
 ## Playground e validação
 

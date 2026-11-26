@@ -63,6 +63,39 @@ o header deixa de ser sticky. Não há smooth scrolling obrigatório.
 Consulte o [ADR 0003](adr/0003-application-shell.md) para os limites entre shell,
 páginas e navegação.
 
+## Hero e Digital Core
+
+`HomePage` compõe `HeroSection` dentro do `main` existente. `HeroSection` usa
+`AppContainer` e `BentoGrid` e integra três componentes:
+
+| Componente         | Responsabilidade e contrato                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| `HeroIntroduction` | Recebe `headingId: string`; apresenta o `h1`, disponibilidade, texto localizado e CTAs.  |
+| `DigitalCore`      | Recebe `motionPreference: HeroMotionPreference`; renderiza o SVG e emite `toggleMotion`. |
+| `HeroHighlights`   | Sem props ou eventos próprios; usa `BentoGrid` e quatro `BentoCard` informativos.        |
+
+`HeroSection` usa `useHeroMotionPreference()` para expor `preference` e
+`toggleMotion()`. A escolha manual é compartilhada apenas no módulo da feature,
+durante a sessão do documento, e sobrevive à remontagem do Hero. Redução de
+movimento tem prioridade. APIs ausentes mantêm a composição estática. A classe
+de entrada é ativada uma vez por montagem, quando permitido, e removida ao fim
+da sequência ou quando a preferência muda para um estado sem movimento.
+
+`useCoreMotion(stage, magneticCore, motionAllowed)` recebe refs dos elementos
+e um getter de permissão; retorna `running` e `magneticEnabled` computados.
+Intersection Observer, visibilidade da página e media queries controlam a
+execução. A suspensão por visibilidade não altera a escolha manual. No desktop
+com hover e ponteiro preciso, o composable lê o retângulo estável do `CoreStage`
+e escreve apenas `transform` no `MagneticCore`, com até um callback por frame,
+sem atualizar a árvore do Vue por evento. A desmontagem cancela esse callback,
+remove listeners e desconecta o observer.
+
+`StaticFrame` e `MagneticCore` são irmãos no stage, em SVGs sobrepostos com
+`viewBox` de 400 × 400 e IDs de pintura derivados de `useId()`. A entrada age
+no ancestral comum; a perspectiva age no wrapper HTML interno; a órbita age
+no grupo de arcos dentro do SVG. Veja o [ADR 0004](adr/0004-camadas-do-digital-core.md)
+e a [direção visual](UX_UI.md#hero-crimson-core-v4).
+
 ## Rotas
 
 | Endereço             | Comportamento                                           |

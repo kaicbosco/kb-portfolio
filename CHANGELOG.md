@@ -14,6 +14,9 @@
 - Application Shell bilíngue com cabeçalho sticky, disclosure mobile, estados de navegação, seletor PT/EN e footer básico com perfis confirmados.
 - Testes do shell para teclado, reflow, contraste, histórico e âncoras, com capturas opcionais para revisão humana.
 - Registro da validação externa da imagem do GHCR e dos smoke tests HTTP no Ubuntu 24.04.5 LTS (`linux/amd64`).
+- Hero bilíngue Crimson Core V4 com apresentação profissional, CTAs de GitHub e LinkedIn e Bento Strip de quatro cards.
+- Digital Core em SVG com Precision Motion, resposta magnética restrita à geometria interna e controle acessível de pausa.
+- Testes do Hero para conteúdo, reflow, ciclo de vida, teclado e independência entre moldura, inclinação e órbita.
 
 ### Alterado
 
@@ -24,6 +27,7 @@
 - Pipeline nativa reutilizável, executada uma vez por evento, e E2E com suporte a servidor externo.
 - Tokens Crimson Void para tipografia, espaçamento, foco e estados interativos, com grid de oito colunas no tablet e acento vermelho no ponto da marca.
 - Layout interno delegado às páginas; foco e scroll distinguem mudanças de página, query, fragmento e histórico.
+- Título da homepage localizado com o nome e a especialidade profissional.
 
 ### Corrigido
 

@@ -4,7 +4,7 @@ test('does not register or advertise the development playground in production', 
   page,
 }) => {
   await page.goto('/pt')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('KB. Portfolio')
+  await expect(page.getByRole('heading', { level: 1, name: 'Kaíque Bosco.' })).toBeVisible()
   await expect(page.locator('a[href="/dev/design-system"]')).toHaveCount(0)
 
   const requestedAssets: string[] = []

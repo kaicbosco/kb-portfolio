@@ -2,7 +2,7 @@
 import { watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterView, useRoute } from 'vue-router'
-import { siteName } from '@/constants/site'
+import { siteName, siteOwner } from '@/constants/site'
 import { defaultLocale, localeDetails } from '@/i18n/config'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 
@@ -17,7 +17,11 @@ watch(
     if (typeof document !== 'undefined') {
       document.documentElement.lang = locale.value
       document.title =
-        !page || page === 'home' ? siteName : `${t(`pages.${page}.title`)} | ${siteName}`
+        page === 'home'
+          ? t('pages.home.title', { name: siteOwner })
+          : page
+            ? `${t(`pages.${page}.title`)} | ${siteName}`
+            : siteName
     }
   },
   { immediate: true },
