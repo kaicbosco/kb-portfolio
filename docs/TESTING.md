@@ -25,6 +25,32 @@ pnpm build
 CI=true PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright-browsers" pnpm test:e2e
 ```
 
+### Application Shell
+
+`src/__tests__/application-shell.spec.ts` verifica landmarks, links confirmados,
+estado ativo, equivalência de idioma, disclosure, foco e prioridade do scroll salvo.
+`e2e/application-shell.spec.ts` roda em Dev, Preview e Nginx: teclado, alvos de
+44 px, estados desktop/mobile, idioma, histórico, header sticky, footer, contraste
+dos estados e redução de movimento. Reflow é coberto em 320, 375, 768, 1024 e 1440 px,
+em PT e EN; o teste adicional de 200% aumenta a fonte raiz e usa um slug longo.
+O playground de desenvolvimento cobre também a rolagem de uma âncora real em uma
+página longa. Não equivale a uma auditoria WCAG 2.2 AA nem a zoom real do navegador.
+
+Para capturar home, projeto, 404 e estados de foco:
+
+```sh
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium \
+  PLAYWRIGHT_SHELL_SCREENSHOTS=1 \
+  pnpm test:e2e e2e/application-shell.spec.ts --grep 'captures'
+```
+
+As imagens ficam em `review-receipts/application-shell/` (ignorado pelo Git),
+sem baseline de comparação de pixels. Para reproduzir zoom real de 200%, ajuste
+a janela do Chromium de modo que `window.innerWidth` seja 640 px antes do zoom,
+aplique 200% e compare `document.documentElement.clientWidth` e `scrollWidth` (a
+barra vertical pode reduzir a largura útil em relação a `innerWidth`). Depois,
+repita com o menu aberto e em ambos os idiomas.
+
 ### Crimson Void
 
 Em desenvolvimento, execute só a suíte do playground e opcionalmente capture a página

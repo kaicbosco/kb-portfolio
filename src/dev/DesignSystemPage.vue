@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppContainer from '@/components/layout/AppContainer.vue'
 import BaseBadge from '@/components/ui/BaseBadge.vue'
 import SectionHeading from '@/components/shared/SectionHeading.vue'
 import TokenSpecimens from './TokenSpecimens.vue'
@@ -7,7 +8,7 @@ import BentoSpecimens from './BentoSpecimens.vue'
 </script>
 
 <template>
-  <div class="crimson-void-playground">
+  <AppContainer class="crimson-void-playground">
     <header class="playground-intro">
       <BaseBadge>Catálogo de desenvolvimento</BaseBadge>
       <SectionHeading
@@ -22,14 +23,14 @@ import BentoSpecimens from './BentoSpecimens.vue'
     <TokenSpecimens />
     <ComponentSpecimens />
     <BentoSpecimens />
-  </div>
+  </AppContainer>
 </template>
 
 <style scoped>
 @reference '../assets/styles/main.css';
 
 .crimson-void-playground {
-  @apply col-span-full min-w-0 space-y-section md:space-y-section-wide;
+  @apply min-w-0 space-y-section py-12 md:space-y-section-wide;
 }
 
 .playground-intro {

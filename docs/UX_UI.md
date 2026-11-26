@@ -1,14 +1,34 @@
 # UX/UI
 
-## Fundação disponível
+## Application Shell
 
-O layout mínimo inclui marca vinculada à inicial do idioma atual, navegação por idioma e região principal. A primeira interação por Tab é o link para pular ao conteúdo. Navegações internas que mudam o caminho focam o conteúdo principal. Links usam texto visível, rótulos nos próprios idiomas e `hreflang`; o idioma corrente é indicado na navegação.
+O cabeçalho sticky tem altura mínima aproximada de 64 px no mobile e 72 px no desktop.
+A partir de `lg` (64 rem), a navegação horizontal fica no centro, entre a marca e os
+idiomas. Abaixo disso, o botão abre uma lista vertical no fluxo do cabeçalho. A
+abertura mantém o foco no botão; o próximo Tab entra no painel. Escape e a seleção
+repetida do destino devolvem o foco ao botão; sair do cabeçalho e navegar também
+fecham o painel. A troca de idioma fica acessível com o painel fechado.
 
-O 404 preserva a URL inválida e oferece retorno à inicial correspondente. As páginas têm um único `h1` e o layout foi verificado em 320 px e 1440 px no Chromium. Isso não substitui a avaliação futura com leitores de tela e outros navegadores.
+| Destino planejado        | Neste handoff                                                            |
+| ------------------------ | ------------------------------------------------------------------------ |
+| Início / Home            | Link público para a inicial localizada, com sublinhado quando atual.     |
+| Sobre / About            | Futuro; sem âncora publicada.                                            |
+| Projetos / Projects      | Futuro; sem índice nem seção publicada. URLs de detalhe são provisórias. |
+| Experiência / Experience | Futuro; sem âncora publicada.                                            |
+| Contato / Contact        | Futuro; sem âncora publicada.                                            |
+
+A marca vai para a inicial do idioma atual. PT/EN mostra os códigos e anuncia os
+nomes completos nos próprios idiomas; o idioma atual é um rótulo, não um link.
+O footer básico tem copyright e os perfis confirmados de GitHub e LinkedIn, que
+abrem na mesma aba. A composição editorial e o CTA ficam para o Handoff 009.
+
+A primeira interação por Tab é o skip link. O 404 preserva a URL inválida e oferece
+retorno à inicial correspondente. As páginas têm um único `h1`; as verificações de
+foco, reflow e contraste estão no [guia de testes](TESTING.md#application-shell).
 
 ## Experiência planejada
 
-1. Navbar
+1. Navbar (estrutura disponível; destinos adicionais dependem das seções)
 2. Hero com Digital Core, um objeto tecnológico abstrato
 3. About Me
 4. Selected Projects

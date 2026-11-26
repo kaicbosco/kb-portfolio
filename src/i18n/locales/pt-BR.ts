@@ -2,6 +2,11 @@ const ptBR = {
   layout: {
     skipToContent: 'Pular para o conteúdo',
     languages: 'Idiomas',
+    primaryNavigation: 'Navegação principal',
+    home: 'Início',
+    openMenu: 'Abrir menu de navegação',
+    closeMenu: 'Fechar menu de navegação',
+    copyright: '© {year} {name}',
   },
   pages: {
     home: {

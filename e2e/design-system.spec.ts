@@ -1,5 +1,6 @@
 import process from 'node:process'
-import { expect, test, type Locator } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { readContrast } from './contrast'
 
 const path = '/dev/design-system'
 const widths = [320, 375, 768, 1024, 1440] as const
@@ -123,6 +124,27 @@ test('reflows when the root text size is doubled', async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
 })
 
+test('offsets a real deep fragment and keeps the shell sticky on the long playground', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1024, height: 720 })
+  await page.goto(`${path}#components-title`)
+  const heading = page.getByRole('heading', { name: 'Primitivos e estados' })
+  await expect(heading).toBeVisible()
+  const banner = page.getByRole('banner')
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  await expect(heading).toBeInViewport()
+  await expect
+    .poll(async () => (await heading.boundingBox())!.y - (await banner.boundingBox())!.height)
+    .toBeGreaterThanOrEqual(3)
+  expect((await banner.boundingBox())?.y).toBe(0)
+  expect(
+    await page.getByRole('contentinfo').evaluate((el) => el.getBoundingClientRect().top),
+  ).toBeGreaterThanOrEqual(
+    await page.getByRole('main').evaluate((el) => el.getBoundingClientRect().bottom),
+  )
+})
+
 test('disables button transitions for reduced motion without removing interaction', async ({
   page,
 }) => {
@@ -136,51 +158,6 @@ test('disables button transitions for reduced motion without removing interactio
   await button.click()
   await expect(page.getByText('Última ação: primary · sm')).toBeVisible()
 })
-
-async function readContrast(control: Locator) {
-  return control.evaluate((element) => {
-    const canvas = document.createElement('canvas')
-    canvas.width = canvas.height = 1
-    const context = canvas.getContext('2d', { willReadFrequently: true })
-    if (!context) throw new Error('Cannot read rendered colors')
-    const ctx = context
-
-    function rgba(css: string) {
-      ctx.clearRect(0, 0, 1, 1)
-      ctx.fillStyle = css
-      ctx.fillRect(0, 0, 1, 1)
-      return ctx.getImageData(0, 0, 1, 1).data
-    }
-
-    function surface(node: Element | null): string {
-      if (!node) throw new Error('Expected an opaque surface behind the control')
-      const color = getComputedStyle(node).backgroundColor
-      return rgba(color)[3] === 255 ? color : surface(node.parentElement)
-    }
-
-    function luminance(css: string) {
-      const [r, g, b] = Array.from(rgba(css).slice(0, 3), (channel) => {
-        const value = channel / 255
-        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
-      })
-      return 0.2126 * r + 0.7152 * g + 0.0722 * b
-    }
-
-    function ratio(a: string, b: string) {
-      const [first, second] = [luminance(a), luminance(b)]
-      return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05)
-    }
-
-    const style = getComputedStyle(element)
-    const outside = surface(element.parentElement)
-    return {
-      fill: style.backgroundColor,
-      text: ratio(style.color, surface(element)),
-      border: ratio(style.borderTopColor, outside),
-      focus: ratio(style.outlineColor, outside),
-    }
-  })
-}
 
 test('measures rendered text and control boundaries in the default, hover and active states', async ({
   page,

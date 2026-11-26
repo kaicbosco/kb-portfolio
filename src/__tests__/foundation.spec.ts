@@ -61,7 +61,7 @@ describe('portfolio app', () => {
     try {
       expect(wrapper.get('h1').text()).toBe('Project')
       expect(wrapper.get('code').text()).toBe('codex-usage')
-      expect(wrapper.get('nav').attributes('aria-label')).toBe('Languages')
+      expect(wrapper.find('nav[aria-label="Languages"]').exists()).toBe(true)
       expect(document.documentElement.lang).toBe('en')
       expect(document.title).toBe('Project | KB. Portfolio')
 
@@ -69,7 +69,7 @@ describe('portfolio app', () => {
 
       expect(wrapper.get('h1').text()).toBe('Página não encontrada')
       expect(wrapper.get('main a').attributes('href')).toBe('/pt')
-      expect(wrapper.get('nav a').attributes('href')).toBe('/en')
+      expect(wrapper.get('nav[aria-label="Idiomas"] a').attributes('href')).toBe('/en')
       expect(document.documentElement.lang).toBe('pt-BR')
       expect(document.title).toBe('Página não encontrada | KB. Portfolio')
     } finally {

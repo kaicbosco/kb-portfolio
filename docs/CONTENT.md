@@ -5,6 +5,7 @@
 - Nome: Kaíque Bosco.
 - Perfil: desenvolvedor front-end e estudante de Engenharia de Software.
 - Idiomas do portfólio: português brasileiro e inglês. Isso não representa uma declaração de proficiência.
+- Perfis públicos: [GitHub](https://github.com/kaicbosco) e [LinkedIn](https://www.linkedin.com/in/kaique-bosco-araujo/).
 
 | Projeto       | Origem                   | Status editorial                                         |
 | ------------- | ------------------------ | -------------------------------------------------------- |
@@ -14,7 +15,7 @@
 
 ## Pendências de confirmação
 
-- Biografia, contatos públicos, links, datas, formação, ferramentas usadas e atribuições por projeto.
+- Biografia, demais contatos públicos e links, datas, formação, ferramentas usadas e atribuições por projeto.
 - Resultados e métricas de impacto com evidência e autorização. Se não forem verificáveis, não publicar.
 - Capturas, materiais e detalhes do ERP Web com autorização explícita. Não incluir código proprietário, dados de clientes, informações confidenciais ou capturas sem revisão.
 - Textos finais e traduções dos estudos de caso, slugs canônicos e política de atualização.

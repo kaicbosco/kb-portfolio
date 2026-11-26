@@ -65,16 +65,16 @@ test('evaluates the responsive grid and loads the Fontsource assets locally', as
   await page.goto('/pt/projetos/codex-usage')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Projeto')
 
-  const main = page.getByRole('main')
+  const grid = page.getByRole('main').locator('.site-grid')
   const columns = () =>
-    main.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)
+    grid.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)
 
   await expect.poll(columns).toBe(4)
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
 
   await page.setViewportSize({ width: 1440, height: 900 })
   await expect.poll(columns).toBe(12)
-  await expect(main).toHaveCSS('max-width', '1280px')
+  await expect(grid).toHaveCSS('max-width', '1280px')
 
   const localFonts = () =>
     fontURLs
