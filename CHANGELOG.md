@@ -13,6 +13,7 @@
 - Catálogo visual em `/dev/design-system`, exclusivo de Vite dev, e testes de componentes, reflow, teclado, contraste e exclusão do catálogo em produção.
 - Application Shell bilíngue com cabeçalho sticky, disclosure mobile, estados de navegação, seletor PT/EN e footer básico com perfis confirmados.
 - Testes do shell para teclado, reflow, contraste, histórico e âncoras, com capturas opcionais para revisão humana.
+- Registro da validação externa da imagem do GHCR e dos smoke tests HTTP no Ubuntu 24.04.5 LTS (`linux/amd64`).
 
 ### Alterado
 

@@ -120,6 +120,25 @@ CI=true PLAYWRIGHT_BASE_URL=http://127.0.0.1:8080 \
   pnpm test:e2e e2e/application-shell.spec.ts --grep 'preserves Crimson Void' --repeat-each 20
 ```
 
+## Smoke tests HTTP em ambiente externo
+
+Em 26/11/2026, a imagem `ghcr.io/kaicbosco/kb-portfolio:latest`, revisão OCI
+`6faf745cd67372224791245c85169bc4b6f49167`, retornou os seguintes status no Ubuntu
+24.04.5 LTS (`linux/amd64`):
+
+| Rota ou recurso            | Status HTTP |
+| -------------------------- | ----------- |
+| `/`                        | 200         |
+| `/pt`                      | 200         |
+| `/en`                      | 200         |
+| `/en/projects/codex-usage` | 200         |
+| `/assets/nonexistent.js`   | 404         |
+
+Os resultados confirmam as respostas HTTP observadas, não a renderização ou as
+interações no navegador da máquina externa, que permanecem não confirmadas.
+Consulte o [registro no guia Docker](DOCKER.md#validação-em-ambiente-externo)
+para as versões do runtime, a comparação com Debian 13 e os limites da amostra.
+
 ## GitHub Actions
 
 O workflow Docker executa em PRs, pushes para `main` e disparos manuais. Invoca `ci.yml` uma única vez por execução. O job nativo usa Node de `.nvmrc`, pnpm de `packageManager` e `pnpm install --frozen-lockfile`. `pnpm check` gera `dist/`; Playwright testa esse build em `127.0.0.1:4173` com um worker.

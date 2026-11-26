@@ -7,6 +7,7 @@ Docker é opcional. O fluxo nativo com `.nvmrc`, pnpm, Vite e Chromium continua 
 - [Comandos e testes](#comandos-e-testes)
 - [Produção e segurança](#produção-e-segurança)
 - [CI/CD e GHCR](#cicd)
+- [Validação em ambiente externo](#validação-em-ambiente-externo)
 - [Diagnóstico e atualização](#diagnóstico-e-atualização)
 
 ## Pré-requisitos e início rápido
@@ -110,6 +111,27 @@ docker logout ghcr.io
 ```
 
 Uma imagem ainda não publicada não pode ser baixada desse endereço. Para workflows consumidores, prefira `GITHUB_TOKEN` com `packages: read`, desde que o repositório tenha acesso ao pacote.
+
+## Validação em ambiente externo
+
+Em 26/11/2026, a imagem `ghcr.io/kaicbosco/kb-portfolio:latest`, com revisão OCI
+`6faf745cd67372224791245c85169bc4b6f49167`, foi validada no seguinte ambiente:
+
+- Ubuntu 24.04.5 LTS (Noble Numbat), `linux/amd64`.
+- Docker Engine Community 29.10.0, Docker API 1.57, containerd 2.4.2 e runc 1.5.3.
+
+O download pelo GHCR e a inicialização foram bem-sucedidos. O healthcheck atingiu
+o estado `healthy`, e o container coexistiu com outros containers ativos.
+Os códigos de resposta estão no [registro dos smoke tests HTTP](TESTING.md#smoke-tests-http-em-ambiente-externo).
+
+Em conjunto com a validação local no Debian 13 (Docker Engine 26.1.5), os resultados
+demonstram portabilidade entre Debian 13 e Ubuntu 24.04.5 LTS em `linux/amd64`,
+com versões diferentes do Docker Engine, dentro do escopo testado.
+
+Na amostra, o container usou 10,57 MiB de memória, registrou 0,00% de CPU, 13 PIDs
+e 0 B de escrita em disco. Esses valores não caracterizam o consumo sob carga elevada.
+Interações no navegador da máquina externa, outras arquiteturas, Windows e macOS
+permanecem não confirmados.
 
 ## Diagnóstico e atualização
 
